@@ -3,26 +3,84 @@
 <head>
     <title>Tính toán số tiền nhận được</title>
     <script>
+        function formatNumber(number) {
+            return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        }
+
+        function updateValue(elementId) {
+            var element = document.getElementById(elementId);
+            var value = element.value.replace(/\./g, ""); // Loại bỏ dấu chấm phân cách hàng nghìn
+            var parsedValue = value !== "" ? parseInt(value, 10) : 0; // Chuyển đổi thành số nguyên
+            var formattedValue = formatNumber(parsedValue);
+            element.value = formattedValue;
+        }
+
         function calculate() {
-            var A = parseFloat(document.getElementById("inputA").value);
-            var B = parseFloat(document.getElementById("inputB").value);
-            var C = parseFloat(document.getElementById("inputC").value);
+            var A = parseInt(document.getElementById("inputA").value);
+            var B = parseInt(document.getElementById("inputB").value);
+            var C = parseInt(document.getElementById("inputC").value);
+
+            var formattedA = formatNumber(A); // Định dạng A
+            var formattedB = formatNumber(B); // Định dạng B
+            var formattedC = formatNumber(C); // Định dạng C
 
             var D = (B - (A * 3 / 100) - C) / 2;
 
-            document.getElementById("result").innerHTML = "Số tiền nhận được (D): " + D;
-        }   
+            var formattedD = formatNumber(D);
+
+            // Hiển thị kết quả D trong bảng
+            var table = document.getElementById("resultTable");
+            var row = table.insertRow(-1); // Thêm một hàng mới vào cuối bảng
+
+            var cellA = row.insertCell(0);
+            cellA.innerHTML = formattedA;
+
+            var cellB = row.insertCell(1);
+            cellB.innerHTML = formattedB;
+
+            var cellC = row.insertCell(2);
+            cellC.innerHTML = formattedC;
+
+            var cellD = row.insertCell(3);
+            cellD.innerHTML = formattedD;
+
+            // Cập nhật tổng các giá trị D
+            var totalD = 0;
+            var rows = table.getElementsByTagName("tr");
+            for (var i = 1; i < rows.length; i++) {
+                var cell = rows[i].getElementsByTagName("td")[3];
+                var value = parseFloat(cell.innerHTML.replace(/\./g, ""));
+                if (!isNaN(value)) {
+                    totalD += value;
+                }
+            }
+            document.getElementById("totalD").innerHTML = formatNumber(totalD);
+
+            // Xóa giá trị các trường input để nhập tiếp
+            document.getElementById("inputA").value = "";
+            document.getElementById("inputB").value = "";
+            document.getElementById("inputC").value = "";
+        }
     </script>
 </head>
 <body>
     <h1>Tính toán số tiền nhận được</h1>
-    <label for="inputA">Tổng tiền sản phẩm( ví dụ 200000):</label>
-    <input type="number" id="inputA" name="inputA"><br><br>
-    <label for="inputB">Số tiền được giảm ( ví dụ 60000):</label>
-    <input type="number" id="inputB" name="inputB"><br><br>
-    <label for="inputC">phí vận chuyển ( thường là 0):</label>
-    <input type="number" id="inputC" name="inputC"><br><br>
+    <label for="inputA">Tổng tiền sản phẩm (ví dụ 200000):</label>
+    <input type="text" id="inputA" name="inputA" oninput="updateValue('inputA')"><br><br>
+    <label for="inputB">Số tiền được giảm (ví dụ 60000):</label>
+    <input type="text" id="inputB" name="inputB" oninput="updateValue('inputB')"><br><br>
+    <label for="inputC">Phí vận chuyển (thường là 0):</label>
+    <input type="text" id="inputC" name="inputC" oninput="updateValue('inputC')"><br><br>
     <button onclick="calculate()">Tính kết quả</button><br><br>
-    <div id="result"></div>
+    <table id="resultTable" border="1">
+        <tr>
+            <th>Tổng tiền sản phẩm</th>
+            <th>Số tiền được giảm</th>
+            <th>Phí vận chuyển</th>
+            <th>Số tiền nhận được (D)</th>
+        </tr>
+    </table>
+    <br>
+    <p>Tổng tiền: <span id="totalD">0</span></p>
 </body>
 </html>
