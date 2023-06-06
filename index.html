@@ -4,21 +4,21 @@
     <title>Tính toán số tiền nhận được</title>
     <script>
         function formatNumber(number) {
-            return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+            return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         }
 
         function updateValue(elementId) {
             var element = document.getElementById(elementId);
-            var value = element.value.replace(/\./g, ""); // Loại bỏ dấu chấm phân cách hàng nghìn
-            var parsedValue = value !== "" ? parseInt(value, 10) : 0; // Chuyển đổi thành số nguyên
+            var value = element.value.replace(/[,.]/g, ""); // Loại bỏ dấu chấm phân cách hàng nghìn và dấu phẩy
+            var parsedValue = value !== "" ? parseFloat(value) : 0; // Chuyển đổi thành số thực
             var formattedValue = formatNumber(parsedValue);
             element.value = formattedValue;
         }
 
         function calculate() {
-            var A = parseInt(document.getElementById("inputA").value);
-            var B = parseInt(document.getElementById("inputB").value);
-            var C = parseInt(document.getElementById("inputC").value);
+            var A = parseFloat(document.getElementById("inputA").value.replace(/[,.]/g, ""));
+            var B = parseFloat(document.getElementById("inputB").value.replace(/[,.]/g, ""));
+            var C = parseFloat(document.getElementById("inputC").value.replace(/[,.]/g, ""));
 
             var formattedA = formatNumber(A); // Định dạng A
             var formattedB = formatNumber(B); // Định dạng B
@@ -49,11 +49,10 @@
             var rows = table.getElementsByTagName("tr");
             for (var i = 1; i < rows.length; i++) {
                 var cell = rows[i].getElementsByTagName("td")[3];
-                var value = parseFloat(cell.innerHTML.replace(/\./g, ""));
-                if (!isNaN(value)) {
-                    totalD += value;
-                }
+                var value = parseFloat(cell.innerHTML.replace(/[,.]/g, ""));
+                totalD += value;
             }
+
             document.getElementById("totalD").innerHTML = formatNumber(totalD);
 
             // Xóa giá trị các trường input để nhập tiếp
@@ -72,7 +71,7 @@
     <label for="inputC">Phí vận chuyển (thường là 0):</label>
     <input type="text" id="inputC" name="inputC" oninput="updateValue('inputC')"><br><br>
     <button onclick="calculate()">Tính kết quả</button><br><br>
-    <table id="resultTable" border="1">
+    <table id="resultTable " border="1">
         <tr>
             <th>Tổng tiền sản phẩm</th>
             <th>Số tiền được giảm</th>
@@ -81,6 +80,6 @@
         </tr>
     </table>
     <br>
-    <p>Tổng tiền: <span id="totalD">0</span></p>
+    <p>Tổng D: <span id="totalD">0</span></p>
 </body>
 </html>
